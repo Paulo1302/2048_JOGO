@@ -42,7 +42,6 @@ def Soma_DE (a,c,e,f):
              [0], [0], [0], [0]]
     e[0] = False
     b = 0
-    cont = 0
     
     if c == 4:
         d = 1
@@ -74,6 +73,12 @@ def Soma_DE (a,c,e,f):
                         e[0] = True
 
 def Soma_ED (a,b,e,f): 
+    """ Função destinada a movimentação, soma, confirmação de movimentação dos blocos e calculo de pontuação do 
+    jogo
+    a = indica qual listadeseja operar.
+    b = O intervalo que deseja ser feito a soma, sendo 4 para linhas e 16 para colunas
+    e = Lista que recebe a confirmação de soma ou movimentação do tabuleiro
+    f = Lista que deve receber a somatória dos pontos"""    
     
     Validação = [[0], [0], [0], [0],
              [0], [0], [0], [0],
@@ -81,7 +86,6 @@ def Soma_ED (a,b,e,f):
              [0], [0], [0], [0]]
     e[0] = False
     c = 0
-    cont = 0
     
     if b == 4:
         d = 1
@@ -103,11 +107,11 @@ def Soma_ED (a,b,e,f):
                         a[Contagem-d] = [0]
                         if (a[Contagem][0] + a[Contagem - d][0]) != 0 :
                             Validação[Contagem] = 1
-                            e[0] = True
                             f[0] = f[0] + a[Contagem][0]
+                            e[0] = True
+                            
                         
-                        
-                    if a[Contagem] == [0] :
+                    if a[Contagem] == [0] and a[Contagem - d] != [0] :
                         a[Contagem] = [a[Contagem][0] + a[Contagem-d][0]]
                         a[Contagem-d] = [0]
                         e[0] = True
@@ -134,12 +138,12 @@ while Jogo == True:
     Verificacao_De_Vitoria = False
     Verif_Derrota = False
     Conf = True
-    Ve_Mov = [bool]
-    Ve_Mov.insert(0,False)
-    Verif_Derrota1 = [bool]
-    Verif_Derrota1.insert(0,False)
-    Verif_Derrota2 = [bool]
-    Verif_Derrota2.insert(0,False)
+    Verificacao_De_Movimento = []
+    Verificacao_De_Movimento.append(False) 
+    Verif_Derrota_Vertical = [bool]
+    Verif_Derrota_Vertical.insert(0,False)
+    Verif_Derrota_Horizontal = [bool]
+    Verif_Derrota_Horizontal.insert(0,False)
     Jogadas = 0
     Ponto = []
     Ponto.append(0)
@@ -156,7 +160,7 @@ while Jogo == True:
 
     # Trecho referente a geração dos blocos aleátorios e contagem de movimentos caso haja um movimento válido
         Valor_Aleatorio = [2,4]
-        if Ve_Mov[0] == True :
+        if Verificacao_De_Movimento[0] == True :
             Contagem_De_Movimentos += 1
 
     #Trecho para geração de blocos aleatórios ao tabuleiro
@@ -167,18 +171,18 @@ while Jogo == True:
                 tabuleiro[posição] = [random.choice(Valor_Aleatorio)]
             #Trecho para geração de um bloco aleatório caso seja possível.
         else: 
-            if Ve_Mov[0] == True and len(Posicao_Disp) > 0 :
+            if Verificacao_De_Movimento[0] == True and len(Posicao_Disp) > 0 :
                 posição = random.choice(Posicao_Disp)
                 tabuleiro[posição] = [random.choice(Valor_Aleatorio)]
 
 #Trecho para validação de movimentos possívies caso todos os blocos do tabuleiro estejam preenchidos 
 #Determinando assim se houve derrota do jogo
         if len(Posicao_Disp) == 1 :
-            Mov_Val(tabuleiro,4,Verif_Derrota1)
-            Mov_Val(tabuleiro,16,Verif_Derrota2)
+            Mov_Val(tabuleiro,4,Verif_Derrota_Vertical)
+            Mov_Val(tabuleiro,16,Verif_Derrota_Horizontal)
 
 #Trecho para alidação da derrota 
-        if Verif_Derrota1[0] == True and Verif_Derrota2[0] == True :
+        if Verif_Derrota_Vertical[0] == True and Verif_Derrota_Horizontal[0] == True :
             Verif_Derrota = True
 
 #Trecho para validação de vitória
@@ -219,13 +223,13 @@ while Jogo == True:
         Jogadas += 1
 
         if Entrada == 'A' :
-            Soma_DE(tabuleiro,4,Ve_Mov,Ponto)
+            Soma_DE(tabuleiro,4,Verificacao_De_Movimento,Ponto)
         if Entrada == 'D':
-            Soma_ED(tabuleiro,4,Ve_Mov,Ponto)
+            Soma_ED(tabuleiro,4,Verificacao_De_Movimento,Ponto)
         if Entrada == 'W' :
-            Soma_DE(tabuleiro,16,Ve_Mov,Ponto)
+            Soma_DE(tabuleiro,16,Verificacao_De_Movimento,Ponto)
         if Entrada == 'S' :
-            Soma_ED(tabuleiro,16,Ve_Mov,Ponto)
+            Soma_ED(tabuleiro,16,Verificacao_De_Movimento,Ponto)
 
 #Trecho referente a finalização do jogo
         if  Verificacao_De_Vitoria == True or Verif_Derrota == True:
@@ -244,6 +248,7 @@ while Jogo == True:
     elif Verif_Derrota == True :
         print('VOCÊ PERDEU!!!')
     print()
+    
     while Conf == True :
         try :
             Continuacao = str(input('Deseja reiniciar o jogo?[S/N] ')).upper()
